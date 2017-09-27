@@ -1,7 +1,7 @@
 ---
 bundle:
   name: bundle-xenial-zabbix
-  img_base: 615d6726-4ca7-44ee-b65c-93c9d8967d22
+  img_base: 6b8cd227-05ef-4da5-b68d-e7a3cf1e0a16
   properties:
     img_os: Ubuntu
     cw_bundle: ZABBIX
