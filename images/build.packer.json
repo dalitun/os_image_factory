@@ -24,7 +24,8 @@
     "provisioners": [
         {
         "type": "ansible",
-        "playbook_file": "{{ user `bundle_path` }}/ansible/bootstrap.yml"
+        "playbook_file": "{{ user `bundle_path` }}/ansible/bootstrap.yml",
+          "inventory_file": "ansible_local_inventory"
         }
     ]
 
