@@ -1,0 +1,63 @@
+---
+#
+##
+### Written by the CAT (Cloudwatt Automation Team)
+##
+#
+- hosts: all
+  user: cloud
+  become: true
+
+  tasks:
+
+    - name: add motd
+      copy: src=motd dest=/etc/motd mode=0775
+
+    - name: generate ssh key
+      user: name=root generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/init.pem
+
+    - name: add authorized key
+      shell: cat /root/.ssh/init.pem.pub >> /root/.ssh/authorized_keys
+
+
+    - name: apt-get update & upgrade
+      apt:
+        upgrade=full
+        update_cache=yes
+        cache_valid_time=3600
+
+    - name: packages installed
+      apt:
+        pkg={{ item }}
+        state=present
+      with_items:
+        - glusterfs-server
+        - attr
+
+    - name: glusterfs-service start
+      service: name=glusterfs-server state=started
+      ignore_errors: yes
+
+
+    - name: post-install playbook directory is created
+      file:
+        path="{{ item.path }}"
+        state=directory
+        owner=root
+        group=root
+        mode=0755
+        recurse=yes
+      with_items:
+        - { path: '/brick/brick1' }
+        - { path: '/brick/brick2' }
+
+    - name: create /usr/libexec/glusterfs/ folder
+      file: path=/usr/libexec/glusterfs/ state=directory recurse=yes mode=0755
+
+    - name: ln /usr/lib/x86_64-linux-gnu/glusterfs/gsyncd
+      file: src=/usr/lib/x86_64-linux-gnu/glusterfs/gsyncd dest=/usr/libexec/glusterfs/gsyncd state=link
+
+    - name: copy install.yml
+      copy: src=install.yml dest=/root/install.yml mode=0755
+
+
